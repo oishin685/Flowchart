@@ -144,3 +144,13 @@ open http://127.0.0.1:5173/
 - 保存先はファイルではなく、このブラウザの `localStorage` です。
 - キー名は `flowchart-builder-doc` です。
 - 同じPCでも、Chrome と Safari などブラウザが違うと保存は共有されません。
+
+### 6) 反映されないとき（超重要）
+- まず最新版を取得してください。
+```bash
+git pull
+npm install
+npm run dev
+```
+- 画面が白いままでも、今後はエラー時に赤いエラーパネルを表示します。
+- ブラウザのURLが `localhost:5173` になっているか再確認してください。
