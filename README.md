@@ -20,10 +20,8 @@ npm install
 npm run dev
 ```
 
-- `npm run dev` は `localhost:5173` 固定で起動し、通常はブラウザを自動で開きます。
-- 自動で開かない場合は手動で `http://localhost:5173/` を開いてください。
-- 自動オープンしたくない場合は `npm run dev:no-open` を使ってください。
-- 他端末から確認したい場合のみ `npm run dev:host` を使ってください。
+- `npm run dev` で開発サーバーを起動できます。
+- ブラウザで `http://localhost:5173/` を開いてください。
 
 ビルド:
 
@@ -102,75 +100,13 @@ npm run lint
 - 実行エンジンのサーバー化
 
 
-## 画面が開かない/白画面のとき（根本確認の手順）
+## 開発時の最小手順
 
-以下は「順番どおり」に実行してください。1つ飛ばすと原因を見落とします。
-
-### 0) script が見つからない場合（`Missing script`）
-```bash
-npm run
-```
-- `doctor` / `status` が一覧に出ない場合は、ローカルが古い状態です。
-- 次を実行して最新版を取得してください。
-```bash
-git fetch --all --prune
-git pull
-npm install
-```
-
-### 1) 実行場所を確認
 ```bash
 cd ~/Flowchart
-pwd
-ls package.json
-```
-- `ls package.json` でファイル名が出ない場合、プロジェクト外で実行しています。
-
-### 1.5) 版ズレを確認（doctor が無いとき）
-```bash
-npm run status
-```
-- `scripts:` に `doctor` が出ない場合、古いコミットを見ています。
-- その場合は `git fetch --all --prune` → `git pull` を実行し、もう一度 `npm run status` を確認してください。
-
-### 2) サーバーを起動（固定ポート）
-```bash
-npm run dev
-```
-このプロジェクトは `localhost:5173` 固定で起動します。ポートが埋まっている場合は起動に失敗し、エラーメッセージが表示されます。
-
-### 3) 「起動できたか」を機械的に確認
-別ターミナルを開いて次を実行:
-```bash
-lsof -nP -iTCP:5173 -sTCP:LISTEN
-```
-- `node ... TCP *:5173 (LISTEN)` のような行が出れば、Viteは起動しています。
-- 何も出ない場合は、Viteは起動していません（= ブラウザ側の問題ではありません）。
-
-### 4) ブラウザは `localhost` を使う
-```text
-http://localhost:5173/
-```
-- まず `localhost` で確認してください。
-- `http://0.0.0.0:5173/` はブラウザで開かないでください（接続拒否になります）。
-- `127.0.0.1` は環境によって接続拒否になることがあります。
-
-### 5) 真っ白のときの確認
-- `Shift + 再読み込み`（ハードリロード）
-- シークレットウィンドウで `http://localhost:5173/` を開く
-- それでもダメならブラウザのDevTools Consoleの赤いエラーを確認
-
-### 6) 更新が反映されないとき
-```bash
-git pull
 npm install
 npm run dev
 ```
-- 保存先はブラウザの `localStorage`（キー: `flowchart-builder-doc`）です。
-- ブラウザが違うと（Chrome / Safari）保存内容は共有されません。
 
-### 7) 自動チェック（おすすめ）
-```bash
-npm run doctor
-```
-- 実行場所・5173番ポート待受・開くURLをまとめて確認できます。
+- ブラウザで `http://localhost:5173/` を開いてください。
+- `npm run dev` 実行中のターミナルはサーバー用なので、別コマンドは別ターミナルで実行してください。
