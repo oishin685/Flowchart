@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Background,
   Controls,
@@ -47,26 +47,9 @@ const AppInner = () => {
     [],
   );
 
-  const lastSelectionRef = useRef<{ nodeIds: string[]; edgeIds: string[] }>({ nodeIds: [], edgeIds: [] });
-
-  const onSelectionChange = useCallback((sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
-    const nodeIds = sel.nodes.map((node) => node.id).sort();
-    const edgeIds = sel.edges.map((edge) => edge.id).sort();
-
-    const sameNodes =
-      lastSelectionRef.current.nodeIds.length === nodeIds.length
-      && lastSelectionRef.current.nodeIds.every((id, index) => id === nodeIds[index]);
-    const sameEdges =
-      lastSelectionRef.current.edgeIds.length === edgeIds.length
-      && lastSelectionRef.current.edgeIds.every((id, index) => id === edgeIds[index]);
-
-    if (sameNodes && sameEdges) {
-      return;
-    }
-
-    lastSelectionRef.current = { nodeIds, edgeIds };
-    setSelection(nodeIds, edgeIds);
-  }, [setSelection]);
+  const onSelectionChange = (sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
+    setSelection({ nodes: sel.nodes, edges: sel.edges });
+  };
 
   const handleSave = () => {
     const doc = toDocument();
