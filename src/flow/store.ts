@@ -15,6 +15,8 @@ interface FlowState {
   variablesSchema: string[];
   selectedNodeId?: string;
   selectedEdgeId?: string;
+  selectedNodeIds: string[];
+  selectedEdgeIds: string[];
   logs: string[];
   history: HistorySnapshot[];
   future: HistorySnapshot[];
@@ -24,7 +26,7 @@ interface FlowState {
   addNode: (kind: FlowNodeData['kind']) => void;
   updateNodeData: (id: string, patch: Partial<FlowNodeData>) => void;
   removeSelected: () => void;
-  setSelection: (selectedNodeId?: string, selectedEdgeId?: string) => void;
+  setSelection: (nodeIds: string[], edgeIds: string[]) => void;
   updateEdgeLabel: (id: string, label: string) => void;
   setLogs: (logs: string[]) => void;
   setFlow: (doc: FlowDocument) => void;
@@ -51,6 +53,8 @@ const mkNode = (kind: FlowNodeData['kind'], idx: number): FlowNode => ({
 
 export const useFlowStore = create<FlowState>((set, get) => ({
   ...SAMPLE_FLOW,
+  selectedNodeIds: [],
+  selectedEdgeIds: [],
   logs: ['サンプルフローを読み込みました。'],
   history: [],
   future: [],
@@ -80,14 +84,32 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       edges: s.edges.filter((e) => e.id !== selectedEdgeId && e.source !== selectedNodeId && e.target !== selectedNodeId),
       selectedEdgeId: undefined,
       selectedNodeId: undefined,
+      selectedNodeIds: [],
+      selectedEdgeIds: [],
     }));
   },
-  setSelection: (selectedNodeId, selectedEdgeId) => {
+  setSelection: (nodeIds, edgeIds) => {
+    const nextNodeIds = [...nodeIds].sort();
+    const nextEdgeIds = [...edgeIds].sort();
+    const nextSelectedNodeId = nextNodeIds[0];
+    const nextSelectedEdgeId = nextEdgeIds[0];
     const current = get();
-    if (current.selectedNodeId === selectedNodeId && current.selectedEdgeId === selectedEdgeId) {
+    const sameNodes =
+      current.selectedNodeIds.length === nextNodeIds.length
+      && current.selectedNodeIds.every((id, index) => id === nextNodeIds[index]);
+    const sameEdges =
+      current.selectedEdgeIds.length === nextEdgeIds.length
+      && current.selectedEdgeIds.every((id, index) => id === nextEdgeIds[index]);
+
+    if (sameNodes && sameEdges) {
       return;
     }
-    set({ selectedNodeId, selectedEdgeId });
+    set({
+      selectedNodeId: nextSelectedNodeId,
+      selectedEdgeId: nextSelectedEdgeId,
+      selectedNodeIds: nextNodeIds,
+      selectedEdgeIds: nextEdgeIds,
+    });
   },
   updateEdgeLabel: (id, label) => set((s) => ({ edges: s.edges.map((e) => (e.id === id ? { ...e, label } : e)) })),
   setLogs: (logs) => set({ logs }),
@@ -95,6 +117,8 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     ...doc,
     selectedNodeId: undefined,
     selectedEdgeId: undefined,
+    selectedNodeIds: [],
+    selectedEdgeIds: [],
     logs: ['フローを読み込みました。'],
     history: [],
     future: [],
@@ -119,6 +143,8 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     ...SAMPLE_FLOW,
     selectedNodeId: undefined,
     selectedEdgeId: undefined,
+    selectedNodeIds: [],
+    selectedEdgeIds: [],
     logs: ['新規作成: サンプルから開始'],
     history: [],
     future: [],
