@@ -15,6 +15,8 @@ interface FlowState {
   variablesSchema: string[];
   selectedNodeId?: string;
   selectedEdgeId?: string;
+  selectedNodeIds: string[];
+  selectedEdgeIds: string[];
   logs: string[];
   history: HistorySnapshot[];
   future: HistorySnapshot[];
@@ -24,7 +26,7 @@ interface FlowState {
   addNode: (kind: FlowNodeData['kind']) => void;
   updateNodeData: (id: string, patch: Partial<FlowNodeData>) => void;
   removeSelected: () => void;
-  setSelection: (nodeId?: string, edgeId?: string) => void;
+  setSelection: (nodeIds: string[], edgeIds: string[]) => void;
   updateEdgeLabel: (id: string, label: string) => void;
   setLogs: (logs: string[]) => void;
   setFlow: (doc: FlowDocument) => void;
@@ -52,6 +54,8 @@ const mkNode = (kind: FlowNodeData['kind'], idx: number): FlowNode => ({
 export const useFlowStore = create<FlowState>((set, get) => ({
   ...SAMPLE_FLOW,
   logs: ['サンプルフローを読み込みました。'],
+  selectedNodeIds: [],
+  selectedEdgeIds: [],
   history: [],
   future: [],
   saveHistory: () => set((s) => ({ history: [...s.history, { nodes: s.nodes, edges: s.edges }].slice(-50), future: [] })),
@@ -80,16 +84,43 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       edges: s.edges.filter((e) => e.id !== selectedEdgeId && e.source !== selectedNodeId && e.target !== selectedNodeId),
       selectedEdgeId: undefined,
       selectedNodeId: undefined,
+      selectedNodeIds: [],
+      selectedEdgeIds: [],
     }));
   },
-  setSelection: (selectedNodeId, selectedEdgeId) => set((s) => (
-    s.selectedNodeId === selectedNodeId && s.selectedEdgeId === selectedEdgeId
-      ? s
-      : { selectedNodeId, selectedEdgeId }
-  )),
+  setSelection: (nodeIds, edgeIds) => set((s) => {
+    const nextNodeIds = [...nodeIds].sort();
+    const nextEdgeIds = [...edgeIds].sort();
+    const sameNodeSelection =
+      s.selectedNodeIds.length === nextNodeIds.length
+      && s.selectedNodeIds.every((id, index) => id === nextNodeIds[index]);
+    const sameEdgeSelection =
+      s.selectedEdgeIds.length === nextEdgeIds.length
+      && s.selectedEdgeIds.every((id, index) => id === nextEdgeIds[index]);
+
+    if (sameNodeSelection && sameEdgeSelection) {
+      return s;
+    }
+
+    return {
+      selectedNodeIds: nextNodeIds,
+      selectedEdgeIds: nextEdgeIds,
+      selectedNodeId: nextNodeIds[0],
+      selectedEdgeId: nextEdgeIds[0],
+    };
+  }),
   updateEdgeLabel: (id, label) => set((s) => ({ edges: s.edges.map((e) => (e.id === id ? { ...e, label } : e)) })),
   setLogs: (logs) => set({ logs }),
-  setFlow: (doc) => set({ ...doc, selectedNodeId: undefined, selectedEdgeId: undefined, logs: ['フローを読み込みました。'], history: [], future: [] }),
+  setFlow: (doc) => set({
+    ...doc,
+    selectedNodeId: undefined,
+    selectedEdgeId: undefined,
+    selectedNodeIds: [],
+    selectedEdgeIds: [],
+    logs: ['フローを読み込みました。'],
+    history: [],
+    future: [],
+  }),
   toDocument: () => {
     const s = get();
     return { nodes: s.nodes, edges: s.edges, meta: { ...s.meta, updatedAt: new Date().toISOString() }, variablesSchema: s.variablesSchema };
@@ -106,5 +137,14 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     if (!next) return;
     set({ nodes: next.nodes, edges: next.edges, history: [...s.history, { nodes: s.nodes, edges: s.edges }], future: s.future.slice(1) });
   },
-  newFlow: () => set({ ...SAMPLE_FLOW, logs: ['新規作成: サンプルから開始'], history: [], future: [] }),
+  newFlow: () => set({
+    ...SAMPLE_FLOW,
+    selectedNodeId: undefined,
+    selectedEdgeId: undefined,
+    selectedNodeIds: [],
+    selectedEdgeIds: [],
+    logs: ['新規作成: サンプルから開始'],
+    history: [],
+    future: [],
+  }),
 }));

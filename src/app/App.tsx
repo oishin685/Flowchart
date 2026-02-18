@@ -48,7 +48,10 @@ const AppInner = () => {
   );
 
   const onSelectionChange = (sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
-    setSelection(sel.nodes[0]?.id, sel.edges[0]?.id);
+    setSelection(
+      sel.nodes.map((node) => node.id),
+      sel.edges.map((edge) => edge.id),
+    );
   };
 
   const handleSave = () => {
