@@ -102,6 +102,27 @@ npm run lint
 - 実行エンジンのサーバー化
 
 
+## このエラーが出たときの最短手順（今回の状態から）
+
+あなたのログの `ENOENT: /Users/shimamurahitoki/package.json` は、**ホームディレクトリ (`~`) で npm を実行した**ことが原因です。
+
+### いちばん簡単な直し方
+```bash
+~/Flowchart/scripts/dev.sh
+```
+- このコマンドは自動で `~/Flowchart` に移動し、`npm install` → `npm run dev` を実行します。
+- ブラウザは `http://localhost:5173/` を開いてください。
+
+### 手動でやる場合
+```bash
+cd ~/Flowchart
+pwd
+ls package.json
+npm install
+npm run dev
+```
+- `ls package.json` でファイル名が出なければ、まだ実行場所が間違っています。
+
 ## 画面が開かない/白画面のとき（根本確認の手順）
 
 以下は「順番どおり」に実行してください。1つ飛ばすと原因を見落とします。
