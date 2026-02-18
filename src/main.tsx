@@ -3,6 +3,32 @@ import ReactDOM from 'react-dom/client';
 import './app/styles.css';
 import '@xyflow/react/dist/style.css';
 
+console.log('MAIN TSX LOADED');
+document.body.style.background = 'yellow';
+
+window.onerror = (message, source, lineno, colno, error) => {
+  const root = document.getElementById('root');
+  const container = document.createElement('section');
+  container.style.margin = '20px';
+  container.style.padding = '16px';
+  container.style.border = '2px solid #991b1b';
+  container.style.background = '#fee2e2';
+  container.style.color = '#7f1d1d';
+  container.innerText = [
+    'window.onerror 捕捉:',
+    String(message),
+    `${source ?? 'unknown'}:${lineno ?? 0}:${colno ?? 0}`,
+    error instanceof Error ? error.stack ?? error.message : '',
+  ].join('\n');
+
+  if (root) {
+    root.replaceChildren(container);
+  } else {
+    document.body.append(container);
+  }
+  return false;
+};
+
 const renderBootstrapError = (error: unknown): void => {
   const root = document.getElementById('root');
   if (!root) return;
