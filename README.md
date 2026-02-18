@@ -21,7 +21,8 @@ npm run dev
 ```
 
 - `npm run dev` で開発サーバーを起動できます。
-- ブラウザで `http://localhost:5173/` を開いてください。
+- ブラウザで **Vite が表示した Local URL** を開いてください（通常は `http://localhost:5173/`）。
+- もし `Port 5173 is in use` が出たら、先に 5173 を使っているプロセスを止めてから再実行してください。
 
 ビルド:
 
@@ -110,3 +111,15 @@ npm run dev
 
 - ブラウザで `http://localhost:5173/` を開いてください。
 - `npm run dev` 実行中のターミナルはサーバー用なので、別コマンドは別ターミナルで実行してください。
+
+
+### 5173ポートが使用中のとき
+
+```bash
+lsof -nP -iTCP:5173 -sTCP:LISTEN
+kill -9 <PID>
+npm run dev
+```
+
+- `<PID>` には `lsof` で表示された番号を入れてください。
+- その後、ターミナルに表示された `Local:` のURLをブラウザで開いてください。
