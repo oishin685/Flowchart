@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Background,
   Controls,
@@ -26,6 +26,8 @@ const AppInner = () => {
     edges,
     meta,
     variablesSchema,
+    selectedNodeId,
+    selectedEdgeId,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -47,9 +49,16 @@ const AppInner = () => {
     [],
   );
 
-  const onSelectionChange = (sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
-    setSelection({ nodes: sel.nodes, edges: sel.edges });
-  };
+  const onSelectionChange = useCallback((sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
+    const nextSelectedNodeId = sel.nodes[0]?.id;
+    const nextSelectedEdgeId = sel.edges[0]?.id;
+
+    if (selectedNodeId === nextSelectedNodeId && selectedEdgeId === nextSelectedEdgeId) {
+      return;
+    }
+
+    setSelection(nextSelectedNodeId, nextSelectedEdgeId);
+  }, [selectedEdgeId, selectedNodeId, setSelection]);
 
   const handleSave = () => {
     const doc = toDocument();
