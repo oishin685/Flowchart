@@ -114,6 +114,13 @@ ls package.json
 ```
 - `ls package.json` でファイル名が出ない場合、プロジェクト外で実行しています。
 
+### 1.5) 版ズレを確認（doctor が無いとき）
+```bash
+npm run status
+```
+- `scripts:` に `doctor` が出ない場合、古いコミットを見ています。
+- その場合は `git fetch --all --prune` → `git pull` を実行し、もう一度 `npm run status` を確認してください。
+
 ### 2) サーバーを起動（固定ポート）
 ```bash
 npm run dev
