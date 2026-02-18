@@ -47,22 +47,15 @@ const AppInner = () => {
   );
 
   const onSelectionChange = useCallback((sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
-    const nextNodeIds = sel?.nodes?.map((node) => node.id).sort() ?? [];
-    const nextEdgeIds = sel?.edges?.map((edge) => edge.id).sort() ?? [];
-    const { selectedNodeIds, selectedEdgeIds } = useFlowStore.getState();
+    const nextSelectedNodeId = sel?.nodes?.[0]?.id ?? undefined;
+    const nextSelectedEdgeId = sel?.edges?.[0]?.id ?? undefined;
+    const { selectedNodeId: currentNodeId, selectedEdgeId: currentEdgeId } = useFlowStore.getState();
 
-    const sameNodes =
-      selectedNodeIds.length === nextNodeIds.length
-      && selectedNodeIds.every((id, index) => id === nextNodeIds[index]);
-    const sameEdges =
-      selectedEdgeIds.length === nextEdgeIds.length
-      && selectedEdgeIds.every((id, index) => id === nextEdgeIds[index]);
-
-    if (sameNodes && sameEdges) {
+    if (currentNodeId === nextSelectedNodeId && currentEdgeId === nextSelectedEdgeId) {
       return;
     }
 
-    useFlowStore.getState().setSelection(nextNodeIds, nextEdgeIds);
+    useFlowStore.getState().setSelection(nextSelectedNodeId, nextSelectedEdgeId);
   }, []);
 
   const handleSave = () => {
