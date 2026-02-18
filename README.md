@@ -106,6 +106,18 @@ npm run lint
 
 以下は「順番どおり」に実行してください。1つ飛ばすと原因を見落とします。
 
+### 0) script が見つからない場合（`Missing script`）
+```bash
+npm run
+```
+- `doctor` / `status` が一覧に出ない場合は、ローカルが古い状態です。
+- 次を実行して最新版を取得してください。
+```bash
+git fetch --all --prune
+git pull
+npm install
+```
+
 ### 1) 実行場所を確認
 ```bash
 cd ~/Flowchart
