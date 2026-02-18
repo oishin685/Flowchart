@@ -26,13 +26,10 @@ const AppInner = () => {
     edges,
     meta,
     variablesSchema,
-    selectedNodeId,
-    selectedEdgeId,
     onNodesChange,
     onEdgesChange,
     onConnect,
     addNode,
-    setSelection,
     setLogs,
     toDocument,
     setFlow,
@@ -52,13 +49,14 @@ const AppInner = () => {
   const onSelectionChange = useCallback((sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
     const nextSelectedNodeId = sel?.nodes?.[0]?.id ?? undefined;
     const nextSelectedEdgeId = sel?.edges?.[0]?.id ?? undefined;
+    const { selectedNodeId: currentNodeId, selectedEdgeId: currentEdgeId } = useFlowStore.getState();
 
-    if (selectedNodeId === nextSelectedNodeId && selectedEdgeId === nextSelectedEdgeId) {
+    if (currentNodeId === nextSelectedNodeId && currentEdgeId === nextSelectedEdgeId) {
       return;
     }
 
-    setSelection(nextSelectedNodeId, nextSelectedEdgeId);
-  }, [selectedEdgeId, selectedNodeId, setSelection]);
+    useFlowStore.getState().setSelection(nextSelectedNodeId, nextSelectedEdgeId);
+  }, []);
 
   const handleSave = () => {
     const doc = toDocument();
