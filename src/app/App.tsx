@@ -50,8 +50,8 @@ const AppInner = () => {
   );
 
   const onSelectionChange = useCallback((sel: OnSelectionChangeParams<FlowNode, FlowEdge>) => {
-    const nextSelectedNodeId = sel.nodes[0]?.id;
-    const nextSelectedEdgeId = sel.edges[0]?.id;
+    const nextSelectedNodeId = sel?.nodes?.[0]?.id ?? undefined;
+    const nextSelectedEdgeId = sel?.edges?.[0]?.id ?? undefined;
 
     if (selectedNodeId === nextSelectedNodeId && selectedEdgeId === nextSelectedEdgeId) {
       return;

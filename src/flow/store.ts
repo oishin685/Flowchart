@@ -80,25 +80,22 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       edges: s.edges.filter((e) => e.id !== selectedEdgeId && e.source !== selectedNodeId && e.target !== selectedNodeId),
       selectedEdgeId: undefined,
       selectedNodeId: undefined,
-        }));
+    }));
   },
-  setSelection: (selectedNodeId, selectedEdgeId) => set((state) => {
-    if (state.selectedNodeId === selectedNodeId && state.selectedEdgeId === selectedEdgeId) {
-      return state;
+  setSelection: (selectedNodeId, selectedEdgeId) => {
+    const current = get();
+    if (current.selectedNodeId === selectedNodeId && current.selectedEdgeId === selectedEdgeId) {
+      return;
     }
-
-    return {
-      selectedNodeId,
-      selectedEdgeId,
-    };
-  }),
+    set({ selectedNodeId, selectedEdgeId });
+  },
   updateEdgeLabel: (id, label) => set((s) => ({ edges: s.edges.map((e) => (e.id === id ? { ...e, label } : e)) })),
   setLogs: (logs) => set({ logs }),
   setFlow: (doc) => set({
     ...doc,
     selectedNodeId: undefined,
     selectedEdgeId: undefined,
-      logs: ['フローを読み込みました。'],
+    logs: ['フローを読み込みました。'],
     history: [],
     future: [],
   }),
@@ -122,7 +119,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     ...SAMPLE_FLOW,
     selectedNodeId: undefined,
     selectedEdgeId: undefined,
-      logs: ['新規作成: サンプルから開始'],
+    logs: ['新規作成: サンプルから開始'],
     history: [],
     future: [],
   }),
